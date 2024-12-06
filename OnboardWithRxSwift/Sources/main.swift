@@ -47,15 +47,20 @@ example(of: "empty") {
 
 example(of: "never") {
     let observable = Observable<Void>.never()
+    let disposeBag = DisposeBag()
     
-    observable.subscribe(
-        onNext: { element in
-            print(element)
-        },
-        onCompleted: {
-            print("Completed")
-        }
-    )
+    observable
+//        .do(onSubscribe: { print("Doing some side effects here that doesn't affect the emitted output") })
+        .debug("Never Identifier")
+        .subscribe(
+            onNext: { element in
+                print(element)
+            },
+            onCompleted: {
+                print("Completed")
+            }
+        )
+        .disposed(by: disposeBag)
 }
 
 example(of: "range") {
