@@ -190,7 +190,12 @@ example(of: "Create a blackjack card dealer using a publish subject") {
         }
         
         // Add code to update dealtHand here
-        dealtHand.onNext(hand)
+        let points = hand.map { $0.1 }.reduce(0, +)
+        if points > 21 {
+            dealtHand.onError(HandError.busted(points: points))
+        } else {
+            dealtHand.onNext(hand)
+        }
     }
     
     // Add subscription to dealtHand here
@@ -206,4 +211,72 @@ example(of: "Create a blackjack card dealer using a publish subject") {
         .disposed(by: disposeBag)
     
     deal(3)
+}
+
+/// 2nd challenge
+example(of: "Observe and check user session state using a behavior relay") {
+    enum UserSession {
+        case loggedIn, loggedOut
+    }
+    
+    enum LoginError: Error {
+        case invalidCredentials
+    }
+    
+    let disposeBag = DisposeBag()
+    
+    // Create userSession BehaviorRelay of type UserSession with initial value of .loggedOut
+    let behaviorRelay = BehaviorRelay<UserSession>(value: .loggedOut)
+    
+    // Subscribe to receive next events from userSession
+    behaviorRelay
+        .subscribe(
+            onNext: { session in
+                print(session)
+            },
+            onError: { error in
+                print(error)
+            }
+        )
+        .disposed(by: disposeBag)
+    
+    func logInWith(username: String, password: String, completion: (Error?) -> Void) {
+        guard username == "johnny@appleseed.com",
+              password == "appleseed" else {
+            completion(LoginError.invalidCredentials)
+            return
+        }
+        
+        // Update userSession
+        behaviorRelay.accept(.loggedIn)
+    }
+    
+    func logOut() {
+        // Update userSession
+        behaviorRelay.accept(.loggedOut)
+    }
+    
+    func performActionRequiringLoggedInUser(_ action: () -> Void) {
+        // Ensure that userSession is loggedIn and then execute action()
+        if behaviorRelay.value == .loggedIn {
+            action()
+        }
+    }
+    
+    for i in 1...2 {
+        let password = i % 2 == 0 ? "appleseed" : "password"
+        
+        logInWith(username: "johnny@appleseed.com", password: password) { error in
+            guard error == nil else {
+                print(error!)
+                return
+            }
+            
+            print("User logged in.")
+        }
+        
+        performActionRequiringLoggedInUser {
+            print("Successfully did something only a logged in user can do.")
+        }
+    }
 }
