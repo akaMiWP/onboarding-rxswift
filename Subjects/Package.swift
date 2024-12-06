@@ -13,7 +13,10 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .executableTarget(
             name: "OnboardWithRxSwift",
-            dependencies: ["RxSwift"]
+            dependencies: [
+                .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "RxRelay", package: "RxSwift") // Explicitly add RxRelay
+            ]
         ),
     ]
 )

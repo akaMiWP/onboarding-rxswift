@@ -3,9 +3,11 @@
 
 import Foundation
 import RxSwift
+import RxRelay
 
-/// PublishSubject will re-emit their stop event to future subscribers
+/// PublishSubject will re-emit their **stop event** to future subscribers
 /// This is useful for bidding scenario that notifies the newcomers after the bidding event to see completed bidding event shown
+/// or in transient state where the previous state doesn't matter such as tapping on a button before the subscriber is created
 example(of: "PublishSubject") {
     let subject = PublishSubject<String>()
     
@@ -59,14 +61,15 @@ func print<T: CustomStringConvertible>(label: String, event: Event<T>) {
     print(label, (event.element ?? event.error) ?? event)
 }
 
-// 3
+/// Behavior subjects work similarly to publish subjects, except they will replay the latest next event to new subscribers
+/// Behavior subjects are useful when you want to pre-populate a view with the most recent data.
 example(of: "BehaviorSubject") {
     // 4
     let subject = BehaviorSubject(value: "Initial value")
     let disposeBag = DisposeBag()
     
     subject.onNext("X")
-
+    
     subject
         .subscribe {
             print(label: "1)", event: $0)
@@ -75,12 +78,92 @@ example(of: "BehaviorSubject") {
     
     // 1
     subject.onError(MyError.anError)
-
+    
     // 2
     subject
-      .subscribe {
-        print(label: "2)", event: $0)
-      }
-      .disposed(by: disposeBag)
+        .subscribe {
+            print(label: "2)", event: $0)
+        }
+        .disposed(by: disposeBag)
+    
+}
 
+example(of: "ReplaySubject") {
+    // 1
+    let subject = ReplaySubject<String>.create(bufferSize: 2)
+    let disposeBag = DisposeBag()
+    
+    // 2
+    subject.onNext("1")
+    subject.onNext("2")
+    subject.onNext("3")
+    
+    // 3
+    subject
+        .subscribe {
+            print(label: "1)", event: $0)
+        }
+        .disposed(by: disposeBag)
+    
+    subject
+        .subscribe {
+            print(label: "2)", event: $0)
+        }
+        .disposed(by: disposeBag)
+    
+    subject.onNext("4")
+    subject.onError(MyError.anError)
+    subject.dispose()
+    
+    subject
+        .subscribe {
+            print(label: "3)", event: $0)
+        }
+        .disposed(by: disposeBag)
+}
+
+example(of: "PublishRelay") {
+    let relay = PublishRelay<String>()
+    
+    let disposeBag = DisposeBag()
+    
+    relay.accept("Knock knock, anyone home?")
+    relay
+        .subscribe(onNext: {
+            print($0)
+        })
+        .disposed(by: disposeBag)
+    
+    relay.accept("1")
+    
+}
+
+example(of: "BehaviorRelay") {
+    // 1
+    let relay = BehaviorRelay(value: "Initial value")
+    let disposeBag = DisposeBag()
+    
+    // 2
+    relay.accept("New initial value")
+    // 3
+    relay
+        .subscribe {
+            print(label: "1)", event: $0)
+        }
+        .disposed(by: disposeBag)
+    
+    // 1
+    relay.accept("1")
+    
+    // 2
+    relay
+        .subscribe {
+            print(label: "2)", event: $0)
+        }
+        .disposed(by: disposeBag)
+    
+    // 3
+    relay.accept("2")
+    
+    print(relay.value)
 }
