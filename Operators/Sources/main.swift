@@ -787,3 +787,16 @@ example(of: "scan") {
   })
 }
 
+// MARK: - Challenges - Combining operators
+
+// Start coding here!
+example(of: "scan") {
+  let source = Observable.of(1, 3, 5, 7, 9)
+
+    let observable = source.scan((0, 0)) { previous, current in
+        return (current, previous.1 + current)
+    }
+  _ = observable.subscribe(onNext: { (current, acuumulated) in
+      print("Current:", current, "Accumulated value:", acuumulated)
+  })
+}
