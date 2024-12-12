@@ -52,14 +52,8 @@ private extension ViewController {
             .disposed(by: disposeBag)
         
         viewModel.dataSourceSubject
-            .bind(to: tableView.rx.items(cellIdentifier: "CustomCell", cellType: CustomCell.self)) { [weak self] (row, item, cell) in
-                guard let self = self else { return }
-                cell.selectionStyle = .none
-                cell.textLabel?.text = item.title
-                cell.checkBoxTapped
-                    .map { (item, $0) }
-                    .bind(to: self.viewModel.inputToDoModel)
-                    .disposed(by: cell.disposeBag)
+            .bind(to: tableView.rx.items(cellIdentifier: "CustomCell", cellType: CustomCell.self)) { (row, item, cell) in
+                cell.bind(item: item, selectedCellSubject: self.viewModel.inputToDoModel)
             }
             .disposed(by: disposeBag)
         

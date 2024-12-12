@@ -28,24 +28,23 @@ final class ViewModel {
             })
             .disposed(by: disposeBag)
         
-//        inputToDoModel
-//            .debug()
-//            .map { (model, isSelected) -> TodoModel in
-//                var model = model
-//                model.isCompleted = isSelected
-//                model.completedDate = isSelected ? .init() : nil
-//                return model
-//            }
-//            .map { [weak self] updatedModel -> [TodoModel] in
-//                guard let self = self else { return [] }
-//                var todoModels = dataSourceSubject.value
-//                print("TodoModels:", todoModels)
-//                if let updatedIndex = todoModels.firstIndex(where: { $0.id == updatedModel.id }) {
-//                    todoModels[updatedIndex] = updatedModel
-//                }
-//                return todoModels
-//            }
-//            .bind(to: dataSourceSubject)
-//            .disposed(by: disposeBag)
+        inputToDoModel
+            .debug()
+            .map { (model, isSelected) -> TodoModel in
+                var model = model
+                model.isCompleted = isSelected
+                model.completedDate = isSelected ? .init() : nil
+                return model
+            }
+            .map { [weak self] updatedModel -> [TodoModel] in
+                guard let self = self else { return [] }
+                var todoModels = dataSourceSubject.value
+                if let updatedIndex = todoModels.firstIndex(where: { $0.id == updatedModel.id }) {
+                    todoModels[updatedIndex] = updatedModel
+                }
+                return todoModels
+            }
+            .bind(to: dataSourceSubject)
+            .disposed(by: disposeBag)
     }
 }

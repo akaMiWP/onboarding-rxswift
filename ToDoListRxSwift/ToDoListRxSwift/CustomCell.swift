@@ -1,20 +1,20 @@
 // 
 
 import RxSwift
+import RxRelay
 import SnapKit
 import UIKit
 
 final class CustomCell: UITableViewCell {
     
-    let checkboxButton = UIButton(type: .custom)
     let checkBoxTapped = PublishSubject<Bool>()
     
-    var disposeBag: DisposeBag = .init()
+    private let checkboxButton = UIButton(type: .custom)
+    private var disposeBag: DisposeBag = .init()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCheckbox()
-        bindUI()
     }
     
     required init?(coder: NSCoder) {
@@ -23,8 +23,8 @@ final class CustomCell: UITableViewCell {
 }
 
 // MARK: - Private
-private extension CustomCell {
-    func setupCheckbox() {
+extension CustomCell {
+    private func setupCheckbox() {
         contentView.addSubview(checkboxButton)
         checkboxButton.setImage(UIImage(systemName: "square"), for: .normal)
         checkboxButton.setImage(UIImage(systemName: "checkmark.square"), for: .selected)
@@ -35,14 +35,23 @@ private extension CustomCell {
         }
     }
     
-    func bindUI() {
+    func bind(item: TodoModel, selectedCellSubject: PublishSubject<(TodoModel, Bool)>) {
+        // Reset disposeBag for fresh bindings
+        disposeBag = DisposeBag()
+        
+        // Set viewModel
+        checkboxButton.isSelected = item.isCompleted
+        textLabel?.text = item.title
+        selectionStyle = .none
+        
+        // Emit checkbox tap events with the current model
         checkboxButton.rx.tap
-            .debug()
-            .map { _ in !self.checkboxButton.isSelected }
+            .map { !self.checkboxButton.isSelected } // Toggle checkbox state
             .do(onNext: { [weak self] isSelected in
                 self?.checkboxButton.isSelected = isSelected
             })
-            .bind(to: checkBoxTapped)
+            .map { (item, $0) } // Map to (TodoModel, isSelected)
+            .bind(to: selectedCellSubject) // Emit to parent
             .disposed(by: disposeBag)
     }
 }
