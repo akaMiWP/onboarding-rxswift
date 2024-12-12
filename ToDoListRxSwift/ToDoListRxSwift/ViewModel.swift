@@ -42,7 +42,13 @@ final class ViewModel {
                 if let updatedIndex = todoModels.firstIndex(where: { $0.id == updatedModel.id }) {
                     todoModels[updatedIndex] = updatedModel
                 }
-                return todoModels
+                return todoModels.sorted { first, second in
+                    if first.completedDate != nil || second.completedDate != nil {
+                        return first.completedDate ?? .init() > second.completedDate ?? .init()
+                    } else {
+                        return first.createdDate < second.createdDate
+                    }
+                }
             }
             .bind(to: dataSourceSubject)
             .disposed(by: disposeBag)

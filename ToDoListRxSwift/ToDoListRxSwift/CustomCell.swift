@@ -10,6 +10,7 @@ final class CustomCell: UITableViewCell {
     let checkBoxTapped = PublishSubject<Bool>()
     
     private let checkboxButton = UIButton(type: .custom)
+    private let strikeThroughLine: UIView = .init()
     private var disposeBag: DisposeBag = .init()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -26,6 +27,7 @@ final class CustomCell: UITableViewCell {
 extension CustomCell {
     private func setupCheckbox() {
         contentView.addSubview(checkboxButton)
+        contentView.addSubview(strikeThroughLine)
         checkboxButton.setImage(UIImage(systemName: "square"), for: .normal)
         checkboxButton.setImage(UIImage(systemName: "checkmark.square"), for: .selected)
         checkboxButton.snp.makeConstraints {
@@ -33,6 +35,12 @@ extension CustomCell {
             $0.centerY.equalToSuperview()
             $0.trailing.equalToSuperview().offset(-22)
         }
+        strikeThroughLine.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(4)
+            $0.height.equalTo(1)
+            $0.centerY.equalToSuperview()
+        }
+        strikeThroughLine.backgroundColor = .lightGray
     }
     
     func bind(item: TodoModel, selectedCellSubject: PublishSubject<(TodoModel, Bool)>) {
@@ -41,6 +49,7 @@ extension CustomCell {
         
         // Set viewModel
         checkboxButton.isSelected = item.isCompleted
+        strikeThroughLine.isHidden = !item.isCompleted
         textLabel?.text = item.title
         selectionStyle = .none
         
@@ -49,6 +58,7 @@ extension CustomCell {
             .map { !self.checkboxButton.isSelected } // Toggle checkbox state
             .do(onNext: { [weak self] isSelected in
                 self?.checkboxButton.isSelected = isSelected
+                self?.strikeThroughLine.isHidden = !isSelected
             })
             .map { (item, $0) } // Map to (TodoModel, isSelected)
             .bind(to: selectedCellSubject) // Emit to parent
