@@ -6,6 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A1ECCC5C2D0AEC3A0068E22F /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = A1ECCC5B2D0AEC3A0068E22F /* RxBlocking */; };
+		A1ECCC5E2D0AEC3A0068E22F /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = A1ECCC5D2D0AEC3A0068E22F /* RxCocoa */; };
+		A1ECCC602D0AEC3A0068E22F /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = A1ECCC5F2D0AEC3A0068E22F /* RxRelay */; };
+		A1ECCC622D0AEC3A0068E22F /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A1ECCC612D0AEC3A0068E22F /* RxSwift */; };
+		A1ECCC642D0AEC3A0068E22F /* RxTest in Frameworks */ = {isa = PBXBuildFile; productRef = A1ECCC632D0AEC3A0068E22F /* RxTest */; };
+		A1ECCC672D0AECE00068E22F /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = A1ECCC662D0AECE00068E22F /* SnapKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		A1ECCC3D2D0AEBDA0068E22F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +74,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1ECCC622D0AEC3A0068E22F /* RxSwift in Frameworks */,
+				A1ECCC672D0AECE00068E22F /* SnapKit in Frameworks */,
+				A1ECCC602D0AEC3A0068E22F /* RxRelay in Frameworks */,
+				A1ECCC5E2D0AEC3A0068E22F /* RxCocoa in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,6 +85,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1ECCC642D0AEC3A0068E22F /* RxTest in Frameworks */,
+				A1ECCC5C2D0AEC3A0068E22F /* RxBlocking in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +140,10 @@
 			);
 			name = ToDoListRxSwift;
 			packageProductDependencies = (
+				A1ECCC5D2D0AEC3A0068E22F /* RxCocoa */,
+				A1ECCC5F2D0AEC3A0068E22F /* RxRelay */,
+				A1ECCC612D0AEC3A0068E22F /* RxSwift */,
+				A1ECCC662D0AECE00068E22F /* SnapKit */,
 			);
 			productName = ToDoListRxSwift;
 			productReference = A1ECCC262D0AEBD80068E22F /* ToDoListRxSwift.app */;
@@ -148,6 +167,8 @@
 			);
 			name = ToDoListRxSwiftTests;
 			packageProductDependencies = (
+				A1ECCC5B2D0AEC3A0068E22F /* RxBlocking */,
+				A1ECCC632D0AEC3A0068E22F /* RxTest */,
 			);
 			productName = ToDoListRxSwiftTests;
 			productReference = A1ECCC3C2D0AEBDA0068E22F /* ToDoListRxSwiftTests.xctest */;
@@ -208,6 +229,10 @@
 			);
 			mainGroup = A1ECCC1D2D0AEBD80068E22F;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A1ECCC5A2D0AEC3A0068E22F /* XCRemoteSwiftPackageReference "RxSwift" */,
+				A1ECCC652D0AECE00068E22F /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A1ECCC272D0AEBD80068E22F /* Products */;
 			projectDirPath = "";
@@ -388,7 +413,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -445,7 +470,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -462,7 +487,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.akaMiWP.ToDoListRxSwiftTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -480,7 +505,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.akaMiWP.ToDoListRxSwiftTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -563,6 +588,58 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A1ECCC5A2D0AEC3A0068E22F /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+		A1ECCC652D0AECE00068E22F /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A1ECCC5B2D0AEC3A0068E22F /* RxBlocking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1ECCC5A2D0AEC3A0068E22F /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxBlocking;
+		};
+		A1ECCC5D2D0AEC3A0068E22F /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1ECCC5A2D0AEC3A0068E22F /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		A1ECCC5F2D0AEC3A0068E22F /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1ECCC5A2D0AEC3A0068E22F /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		A1ECCC612D0AEC3A0068E22F /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1ECCC5A2D0AEC3A0068E22F /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		A1ECCC632D0AEC3A0068E22F /* RxTest */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1ECCC5A2D0AEC3A0068E22F /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxTest;
+		};
+		A1ECCC662D0AECE00068E22F /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1ECCC652D0AECE00068E22F /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A1ECCC1E2D0AEBD80068E22F /* Project object */;
 }
