@@ -8,9 +8,10 @@ final class ViewModel {
     /// Input Properties
     let addTaskSubject: PublishSubject<Void> = .init()
     let currentTaskSubject: PublishSubject<String> = .init()
+    let inputToDoModel: PublishSubject<(TodoModel, Bool)> = .init()
     
     /// Output Properties
-    let dataSoureSubject = BehaviorRelay<[TodoModel]>(value: [])
+    let dataSourceSubject = BehaviorRelay<[TodoModel]>(value: [])
     var presentedAlert: Observable<Void> {
         addTaskSubject.asObservable()
     }
@@ -22,9 +23,29 @@ final class ViewModel {
             .drive(onNext: { [weak self] task in
                 guard let self = self else { return }
                 let model: TodoModel = .init(title: task)
-                let newTasks: [TodoModel] = self.dataSoureSubject.value + [model]
-                self.dataSoureSubject.accept(newTasks)
+                let newTasks: [TodoModel] = self.dataSourceSubject.value + [model]
+                self.dataSourceSubject.accept(newTasks)
             })
             .disposed(by: disposeBag)
+        
+//        inputToDoModel
+//            .debug()
+//            .map { (model, isSelected) -> TodoModel in
+//                var model = model
+//                model.isCompleted = isSelected
+//                model.completedDate = isSelected ? .init() : nil
+//                return model
+//            }
+//            .map { [weak self] updatedModel -> [TodoModel] in
+//                guard let self = self else { return [] }
+//                var todoModels = dataSourceSubject.value
+//                print("TodoModels:", todoModels)
+//                if let updatedIndex = todoModels.firstIndex(where: { $0.id == updatedModel.id }) {
+//                    todoModels[updatedIndex] = updatedModel
+//                }
+//                return todoModels
+//            }
+//            .bind(to: dataSourceSubject)
+//            .disposed(by: disposeBag)
     }
 }

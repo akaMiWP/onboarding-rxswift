@@ -3,10 +3,11 @@
 import Foundation
 
 struct TodoModel: Codable {
-    let isCompleted: Bool
+    var id: UUID = .init()
     let title: String
     let createdDate: Date
-    let completedDate: Date?
+    var isCompleted: Bool
+    var completedDate: Date?
     
     init(isCompleted: Bool = false,
          title: String,

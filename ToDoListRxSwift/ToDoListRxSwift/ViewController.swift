@@ -37,12 +37,13 @@ private extension ViewController {
         view.addSubview(tableView)
         tableView.snp.makeConstraints { $0.edges.equalToSuperview() }
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        tableView.register(CustomCell.self, forCellReuseIdentifier: "CustomCell")
     }
     
     func setUpNavigationBar() {
         navigationItem.title = "To Do List"
-        navigationItem.rightBarButtonItem = .init(title: "Add", style: .plain, target: self, action: nil) /// With RxSwift, no need to handle tap action here
+        /// With RxSwift, no need to handle tap action here
+        navigationItem.rightBarButtonItem = .init(title: "Add", style: .plain, target: self, action: nil)
     }
     
     func bindUI() {
@@ -50,9 +51,15 @@ private extension ViewController {
             .bind(to: viewModel.addTaskSubject)
             .disposed(by: disposeBag)
         
-        viewModel.dataSoureSubject
-            .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) { (row, item, cell) in
+        viewModel.dataSourceSubject
+            .bind(to: tableView.rx.items(cellIdentifier: "CustomCell", cellType: CustomCell.self)) { [weak self] (row, item, cell) in
+                guard let self = self else { return }
+                cell.selectionStyle = .none
                 cell.textLabel?.text = item.title
+                cell.checkBoxTapped
+                    .map { (item, $0) }
+                    .bind(to: self.viewModel.inputToDoModel)
+                    .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
         
