@@ -7,14 +7,19 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let addTaskSubject: PublishSubject<Void> = .init()
-    let currentTaskSubject: PublishSubject<String> = .init()
-    
+    private let tableView: UITableView = .init()
     private let disposeBag: DisposeBag = .init()
     
-    private let tableView: UITableView = .init()
+    private let viewModel: ViewModel
     
-    private let mockObservable = Observable.of(["1", "2", "3", "4", "5"])
+    init(viewModel: ViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("Shouldn't be called")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,23 +46,18 @@ private extension ViewController {
     }
     
     func bindUI() {
-        mockObservable.bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) { (row, item, cell) in
-            cell.textLabel?.text = item
-        }
-        .disposed(by: disposeBag)
-        
         navigationItem.rightBarButtonItem?.rx.tap
-            .bind(to: addTaskSubject)
+            .bind(to: viewModel.addTaskSubject)
             .disposed(by: disposeBag)
         
-        addTaskSubject.asDriver(onErrorJustReturn: ())
-            .drive(onNext: { [weak self] in
-                self?.presentAlert()
-            })
+        viewModel.dataSource
+            .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) { (row, item, cell) in
+                cell.textLabel?.text = item
+            }
             .disposed(by: disposeBag)
         
-        currentTaskSubject.asDriver(onErrorJustReturn: "")
-            .drive(onNext: { task in print("Created task:", task) })
+        viewModel.presentedAlert
+            .subscribe(onNext: { [weak self] in self?.presentAlert() })
             .disposed(by: disposeBag)
     }
     
@@ -69,7 +69,7 @@ private extension ViewController {
         )
         
         let addAction = UIAlertAction(title: "Add", style: .default) { [weak self] _ in
-            alertController.textFields?.first?.text.map { self?.currentTaskSubject.onNext($0) }
+            alertController.textFields?.first?.text.map { self?.viewModel.currentTaskSubject.onNext($0) }
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)

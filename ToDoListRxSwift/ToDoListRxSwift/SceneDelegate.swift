@@ -13,7 +13,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = .init(windowScene: windowScene)
-        let viewController = ViewController()
+        let viewModel: ViewModel = .init()
+        let viewController = ViewController(viewModel: viewModel)
         viewController.view.backgroundColor = .white
         let rootViewController = UINavigationController(rootViewController: viewController)
         window?.rootViewController = rootViewController
