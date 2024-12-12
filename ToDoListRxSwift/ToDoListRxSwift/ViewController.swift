@@ -6,9 +6,14 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        navigationItem.rightBarButtonItem = .init(title: "Add", style: .plain, target: self, action: nil)
     }
-
-
 }
 
+// MARK: - Private
+private extension ViewController {
+    @objc func didTapAddTaskButton() {
+        
+    }
+}
