@@ -52,7 +52,7 @@ private extension ViewController {
         
         viewModel.dataSoureSubject
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) { (row, item, cell) in
-                cell.textLabel?.text = item
+                cell.textLabel?.text = item.title
             }
             .disposed(by: disposeBag)
         

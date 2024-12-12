@@ -10,7 +10,7 @@ final class ViewModel {
     let currentTaskSubject: PublishSubject<String> = .init()
     
     /// Output Properties
-    let dataSoureSubject = BehaviorRelay<[String]>(value: [])
+    let dataSoureSubject = BehaviorRelay<[TodoModel]>(value: [])
     var presentedAlert: Observable<Void> {
         addTaskSubject.asObservable()
     }
@@ -21,7 +21,8 @@ final class ViewModel {
         currentTaskSubject.asDriver(onErrorJustReturn: "")
             .drive(onNext: { [weak self] task in
                 guard let self = self else { return }
-                let newTasks: [String] = self.dataSoureSubject.value + [task]
+                let model: TodoModel = .init(title: task)
+                let newTasks: [TodoModel] = self.dataSoureSubject.value + [model]
                 self.dataSoureSubject.accept(newTasks)
             })
             .disposed(by: disposeBag)
