@@ -1,5 +1,6 @@
 // 
 
+import RxRelay
 import RxSwift
 
 final class ViewModel {
@@ -9,7 +10,7 @@ final class ViewModel {
     let currentTaskSubject: PublishSubject<String> = .init()
     
     /// Output Properties
-    let dataSource = Observable.of(["1", "2", "3", "4", "5"])
+    let dataSoureSubject = BehaviorRelay<[String]>(value: [])
     var presentedAlert: Observable<Void> {
         addTaskSubject.asObservable()
     }
@@ -18,7 +19,11 @@ final class ViewModel {
     
     init() {
         currentTaskSubject.asDriver(onErrorJustReturn: "")
-            .drive(onNext: { task in print("Created task:", task) })
+            .drive(onNext: { [weak self] task in
+                guard let self = self else { return }
+                let newTasks: [String] = self.dataSoureSubject.value + [task]
+                self.dataSoureSubject.accept(newTasks)
+            })
             .disposed(by: disposeBag)
     }
 }

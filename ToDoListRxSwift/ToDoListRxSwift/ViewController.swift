@@ -50,7 +50,7 @@ private extension ViewController {
             .bind(to: viewModel.addTaskSubject)
             .disposed(by: disposeBag)
         
-        viewModel.dataSource
+        viewModel.dataSoureSubject
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) { (row, item, cell) in
                 cell.textLabel?.text = item
             }
