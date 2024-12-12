@@ -12,10 +12,39 @@ class ViewController: UIViewController {
     
     private let disposeBag: DisposeBag = .init()
     
+    private let tableView: UITableView = .init()
+    
+    private let mockObservable = Observable.of(["1", "2", "3", "4", "5"])
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setUpUI()
+        bindUI()
+    }
+}
+
+// MARK: - Private
+private extension ViewController {
+    func setUpUI() {
+        setUpNavigationBar()
+        
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+    }
+    
+    func setUpNavigationBar() {
+        navigationItem.title = "To Do List"
+        navigationItem.rightBarButtonItem = .init(title: "Add", style: .plain, target: self, action: nil) /// With RxSwift, no need to handle tap action here
+    }
+    
+    func bindUI() {
+        mockObservable.bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) { (row, item, cell) in
+            cell.textLabel?.text = item
+        }
+        .disposed(by: disposeBag)
         
         navigationItem.rightBarButtonItem?.rx.tap
             .bind(to: addTaskSubject)
@@ -30,18 +59,6 @@ class ViewController: UIViewController {
         currentTaskSubject.asDriver(onErrorJustReturn: "")
             .drive(onNext: { task in print("Created task:", task) })
             .disposed(by: disposeBag)
-    }
-}
-
-// MARK: - Private
-private extension ViewController {
-    func setUpUI() {
-        setUpNavigationBar()
-    }
-    
-    func setUpNavigationBar() {
-        navigationItem.title = "To Do List"
-        navigationItem.rightBarButtonItem = .init(title: "Add", style: .plain, target: self, action: nil) /// With RxSwift, no need to handle tap action here
     }
     
     func presentAlert() {
