@@ -58,7 +58,7 @@ private extension ViewController {
             .disposed(by: disposeBag)
         
         viewModel.presentedAlert
-            .subscribe(onNext: { [weak self] in self?.presentAlert() })
+            .drive(onNext: { [weak self] in self?.presentAlert() })
             .disposed(by: disposeBag)
     }
     

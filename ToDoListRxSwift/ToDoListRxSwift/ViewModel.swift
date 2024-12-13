@@ -6,20 +6,20 @@ import RxSwift
 
 final class ViewModel {
     
-    /// Input Properties
+    /// Input Properties: often be a Subject type since it needs to act as Observer to bind with async input from UI
     let addTaskSubject: PublishSubject<Void> = .init()
     let currentTaskSubject: PublishSubject<String> = .init()
     let selectedModelSubject: PublishSubject<(TodoModel, Bool)> = .init()
     
-    /// Output Properties
+    /// Output Properties: ofter be a Driver type or Observable type with proper thread and error management to ensure UI update run on the main thread
     private let dataSourceSubject = BehaviorRelay<[TodoModel]>(value: [])
     
     var dataSourceDriver: Driver<[TodoModel]> {
         dataSourceSubject.asDriver()
     }
     
-    var presentedAlert: Observable<Void> {
-        addTaskSubject.asObservable()
+    var presentedAlert: Driver<Void> {
+        addTaskSubject.asDriver(onErrorJustReturn: ())
     }
     
     private let disposeBag: DisposeBag = .init()
