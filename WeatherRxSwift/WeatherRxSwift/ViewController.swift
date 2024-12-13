@@ -85,15 +85,20 @@ private extension ViewController {
         alertLabel.isHidden = true
         
         resetButton.tintColor = .blue
-        resetButton.setImage(.init(systemName: "arrow.clockwise"), for: .normal)
+        resetButton.setImage(.init(systemName: "checkmark.circle"), for: .normal)
+        resetButton.setImage(.init(systemName: "arrow.clockwise"), for: .disabled)
     }
     
     func bindUI() {
         textField.rx.text.orEmpty
-            .bind(to: viewModel.searchInputSubject)
+            .bind(to: viewModel.searchInputRelay)
             .disposed(by: disposeBag)
         
         searchButton.rx.tap
+            .bind(to: viewModel.fetchAPISubject)
+            .disposed(by: disposeBag)
+        
+        resetButton.rx.tap
             .bind(to: viewModel.fetchAPISubject)
             .disposed(by: disposeBag)
         
@@ -105,6 +110,11 @@ private extension ViewController {
         viewModel.shouldShowAlertDriver
             .map { !$0 }
             .drive(alertLabel.rx.isHidden)
+            .disposed(by: disposeBag)
+        
+        viewModel.isFetchingAPIFailedDriver
+            .map { !$0 }
+            .drive(resetButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
 }
