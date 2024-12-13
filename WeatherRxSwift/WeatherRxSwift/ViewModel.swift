@@ -37,7 +37,7 @@ struct WeatherModel: Decodable {
     
     static let defaultModel: WeatherModel = .init(
         coordinate: .init(lat: 0, lon: 0),
-        weather: [.init(main: "Main", description: "Description")],
+        weather: [.init(main: "unknown", description: "unknown")],
         details: .init(temp: 0, feelsLike: 0)
     )
 }
@@ -51,11 +51,15 @@ final class ViewModel {
     // Output properties
     private let validateSearchInputSubject = PublishSubject<Bool>()
     private let isFetchingAPIFailedSubject = PublishSubject<Bool>()
+    private let modelSubject = BehaviorSubject<WeatherModel>(value: .defaultModel)
     var shouldShowAlertDriver: Driver<Bool> {
         validateSearchInputSubject.asDriver(onErrorJustReturn: false)
     }
     var isFetchingAPIFailedDriver: Driver<Bool> {
         isFetchingAPIFailedSubject.asDriver(onErrorJustReturn: true)
+    }
+    var modelDriver: Driver<WeatherModel> {
+        modelSubject.asDriver(onErrorJustReturn: .defaultModel)
     }
     
     private let disposeBag: DisposeBag = .init()
@@ -80,11 +84,7 @@ final class ViewModel {
             .catchErrorJustReturn(.defaultModel)
         
         fetchAPIObservable
-            .subscribe { model in
-                print("WeatherModel:", model)
-            } onError: { error in
-                print("Error:", error.localizedDescription)
-            }
+            .bind(to: modelSubject)
             .disposed(by: disposeBag)
         
         filteredSearchInputObservable

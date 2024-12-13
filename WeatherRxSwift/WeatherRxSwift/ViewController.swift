@@ -10,7 +10,9 @@ class ViewController: UIViewController {
     private let textField: UITextField = .init()
     private let searchButton: UIButton = .init()
     private let alertLabel: UILabel = .init()
-    private let stackView: UIStackView = .init()
+    private let latLongLabel: UILabel = .init()
+    private let weatherOverallLabel: UILabel = .init()
+    private let weatherDetailLabel: UILabel = .init()
     private let resetButton: UIButton = .init()
     
     private let disposeBag: DisposeBag = .init()
@@ -40,7 +42,9 @@ private extension ViewController {
         view.addSubview(textField)
         view.addSubview(searchButton)
         view.addSubview(alertLabel)
-        view.addSubview(stackView)
+        view.addSubview(latLongLabel)
+        view.addSubview(weatherOverallLabel)
+        view.addSubview(weatherDetailLabel)
         view.addSubview(resetButton)
         
         textField.snp.makeConstraints {
@@ -62,10 +66,19 @@ private extension ViewController {
             $0.leading.trailing.equalToSuperview().inset(24)
         }
         
-        stackView.snp.makeConstraints {
+        latLongLabel.snp.makeConstraints {
             $0.top.equalTo(textField.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(24)
-            $0.bottom.equalTo(resetButton.snp.top).inset(16)
+        }
+        
+        weatherOverallLabel.snp.makeConstraints {
+            $0.top.equalTo(latLongLabel.snp.bottom).offset(12)
+            $0.leading.trailing.equalToSuperview().inset(24)
+        }
+        
+        weatherDetailLabel.snp.makeConstraints {
+            $0.top.equalTo(weatherOverallLabel.snp.bottom).offset(12)
+            $0.leading.trailing.equalToSuperview().inset(24)
         }
         
         resetButton.snp.makeConstraints {
@@ -115,6 +128,24 @@ private extension ViewController {
         viewModel.isFetchingAPIFailedDriver
             .map { !$0 }
             .drive(resetButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        viewModel.modelDriver
+            .map { $0.coordinate }
+            .map { "Latitude: \($0.lat)\n Longtitude: \($0.lon)" }
+            .drive(weatherOverallLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel.modelDriver
+            .compactMap { $0.weather.first }
+            .map { "Main: \($0.main)\n Description: \($0.description)" }
+            .drive(weatherOverallLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel.modelDriver
+            .map { $0.details }
+            .map { "Temperature: \($0.temp)\n Feel like: \($0.feelsLike)" }
+            .drive(weatherDetailLabel.rx.text)
             .disposed(by: disposeBag)
     }
 }
