@@ -1,5 +1,6 @@
 // 
 
+import RxCocoa
 import RxRelay
 import RxSwift
 
@@ -8,10 +9,15 @@ final class ViewModel {
     /// Input Properties
     let addTaskSubject: PublishSubject<Void> = .init()
     let currentTaskSubject: PublishSubject<String> = .init()
-    let inputToDoModel: PublishSubject<(TodoModel, Bool)> = .init()
+    let selectedModelSubject: PublishSubject<(TodoModel, Bool)> = .init()
     
     /// Output Properties
-    let dataSourceSubject = BehaviorRelay<[TodoModel]>(value: [])
+    private let dataSourceSubject = BehaviorRelay<[TodoModel]>(value: [])
+    
+    var dataSourceDriver: Driver<[TodoModel]> {
+        dataSourceSubject.asDriver()
+    }
+    
     var presentedAlert: Observable<Void> {
         addTaskSubject.asObservable()
     }
@@ -28,7 +34,7 @@ final class ViewModel {
             })
             .disposed(by: disposeBag)
         
-        inputToDoModel
+        selectedModelSubject
             .debug()
             .map { (model, isSelected) -> TodoModel in
                 var model = model

@@ -51,9 +51,9 @@ private extension ViewController {
             .bind(to: viewModel.addTaskSubject)
             .disposed(by: disposeBag)
         
-        viewModel.dataSourceSubject
-            .bind(to: tableView.rx.items(cellIdentifier: "CustomCell", cellType: CustomCell.self)) { (row, item, cell) in
-                cell.bind(item: item, selectedCellSubject: self.viewModel.inputToDoModel)
+        viewModel.dataSourceDriver
+            .drive(tableView.rx.items(cellIdentifier: "CustomCell", cellType: CustomCell.self)) { (row, item, cell) in
+                cell.bind(item: item, selectedCellSubject: self.viewModel.selectedModelSubject)
             }
             .disposed(by: disposeBag)
         
