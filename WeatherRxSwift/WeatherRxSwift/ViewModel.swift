@@ -1,12 +1,20 @@
 // 
 
+import Foundation
 import RxCocoa
 import RxSwift
+
+enum NetworkError: Error {
+    case notSuccess
+}
+
+struct WeatherModel: Decodable {}
 
 final class ViewModel {
     
     // Input properties
     let searchInputSubject = BehaviorSubject<String>(value: "")
+    let fetchAPISubject = PublishSubject<Void>()
     
     // Output properties
     private let validateSearchInputSubject = PublishSubject<Bool>()
@@ -20,6 +28,21 @@ final class ViewModel {
         let filteredSearchInputSubject = searchInputSubject
             .filter { !$0.isEmpty }
             .throttle(.milliseconds(1000), scheduler: MainScheduler.instance)
+        
+        fetchAPISubject
+            .flatMap { _ in URLSession.shared.rx.response(request: .init(url: .init(string: "www.google.com")!)) }
+            .retry(3)
+            .map { (response, data) in
+                guard 200..<300 ~= response.statusCode else { throw NetworkError.notSuccess }
+                return data
+            }
+            .map { try JSONDecoder().decode(WeatherModel.self, from: $0) }
+            .subscribe { model in
+                print("WeatherModel:", model)
+            } onError: { error in
+                print("Error:", error.localizedDescription)
+            }
+            .disposed(by: disposeBag)
         
         filteredSearchInputSubject
             .subscribe(onNext: { print("Tapped:", $0)})

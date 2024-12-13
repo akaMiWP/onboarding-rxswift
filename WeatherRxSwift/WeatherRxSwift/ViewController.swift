@@ -8,6 +8,7 @@ import UIKit
 class ViewController: UIViewController {
     
     private let textField: UITextField = .init()
+    private let searchButton: UIButton = .init()
     private let alertLabel: UILabel = .init()
     private let stackView: UIStackView = .init()
     private let resetButton: UIButton = .init()
@@ -37,14 +38,23 @@ class ViewController: UIViewController {
 private extension ViewController {
     func setUpUI() {
         view.addSubview(textField)
+        view.addSubview(searchButton)
         view.addSubview(alertLabel)
         view.addSubview(stackView)
         view.addSubview(resetButton)
         
         textField.snp.makeConstraints {
             $0.top.equalTo(view.snp.topMargin).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.leading.equalToSuperview().inset(12)
+            $0.trailing.equalTo(searchButton.snp.leading).offset(-8)
             $0.height.equalTo(48)
+        }
+        
+        searchButton.snp.makeConstraints {
+            $0.centerY.equalTo(textField)
+            $0.trailing.equalToSuperview().inset(12)
+            $0.height.equalTo(48)
+            $0.width.equalTo(80)
         }
         
         alertLabel.snp.makeConstraints {
@@ -65,9 +75,15 @@ private extension ViewController {
         }
         
         textField.placeholder = "Enter City Name"
+        
+        searchButton.setTitle("Search", for: .normal)
+        searchButton.setTitleColor(.black, for: .normal)
+        searchButton.setTitleColor(.gray, for: .disabled)
+        
         alertLabel.textColor = .red
         alertLabel.text = "Only letters allowed"
         alertLabel.isHidden = true
+        
         resetButton.tintColor = .blue
         resetButton.setImage(.init(systemName: "arrow.clockwise"), for: .normal)
     }
@@ -77,9 +93,17 @@ private extension ViewController {
             .bind(to: viewModel.searchInputSubject)
             .disposed(by: disposeBag)
         
+        searchButton.rx.tap
+            .bind(to: viewModel.fetchAPISubject)
+            .disposed(by: disposeBag)
+        
         viewModel.shouldShowAlertDriver
             .map { !$0 }
-            .debug()
+            .drive(searchButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+            
+        viewModel.shouldShowAlertDriver
+            .map { !$0 }
             .drive(alertLabel.rx.isHidden)
             .disposed(by: disposeBag)
     }
