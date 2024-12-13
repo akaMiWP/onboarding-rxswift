@@ -67,21 +67,24 @@ final class ViewModel {
     init() {
         let filteredSearchInputObservable = searchInputRelay
             .filter { !$0.isEmpty }
-            .throttle(.milliseconds(1000), scheduler: MainScheduler.instance)
+            .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
         
         let fetchAPIObservable = fetchAPISubject
-            .flatMap { _ in URLSession.shared.rx.response(request: .init(url: getURL(city: self.searchInputRelay.value))) }
-            .map { (response, data) in
-                guard 200..<300 ~= response.statusCode else { throw NetworkError.notSuccess }
-                return data
-            }
-            .map {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                return try decoder.decode(WeatherModel.self, from: $0)
+            .flatMapLatest { _ in
+                URLSession.shared.rx
+                    .response(request: .init(url: getURL(city: self.searchInputRelay.value)))
+                    .map { (response, data) in
+                        guard 200..<300 ~= response.statusCode else { throw NetworkError.notSuccess }
+                        return data
+                    }
+                    .map {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        return try decoder.decode(WeatherModel.self, from: $0)
+                    }
+                    .catchErrorJustReturn(.defaultModel)
             }
             .do(onError: { _ in self.isFetchingAPIFailedSubject.on(.next(true)) })
-            .catchErrorJustReturn(.defaultModel)
         
         fetchAPIObservable
             .bind(to: modelSubject)
@@ -102,10 +105,8 @@ final class ViewModel {
 
 func getURL(city: String) -> URL {
     let key = Bundle.main.infoDictionary?["API_KEY"] as! String
-    print("Key:", key)
     var url = URL(string: "https://api.openweathermap.org/data/2.5/weather")!
     url.append(queryItems: [.init(name: "q", value: city)])
     url.append(queryItems: [.init(name: "appid", value: key)])
-    print("AbsoluteString:", url.absoluteString)
     return url
 }

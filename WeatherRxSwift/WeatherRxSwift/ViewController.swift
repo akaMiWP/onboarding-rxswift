@@ -49,14 +49,14 @@ private extension ViewController {
         
         textField.snp.makeConstraints {
             $0.top.equalTo(view.snp.topMargin).offset(8)
-            $0.leading.equalToSuperview().inset(12)
+            $0.leading.equalToSuperview().inset(24)
             $0.trailing.equalTo(searchButton.snp.leading).offset(-8)
             $0.height.equalTo(48)
         }
         
         searchButton.snp.makeConstraints {
             $0.centerY.equalTo(textField)
-            $0.trailing.equalToSuperview().inset(12)
+            $0.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(48)
             $0.width.equalTo(80)
         }
@@ -82,24 +82,28 @@ private extension ViewController {
         }
         
         resetButton.snp.makeConstraints {
-            $0.size.equalTo(48)
+            $0.height.equalTo(48)
+            $0.width.equalTo(100)
             $0.bottom.equalTo(view.snp.bottomMargin).offset(4)
             $0.trailing.equalToSuperview().inset(24)
         }
         
         textField.placeholder = "Enter City Name"
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        textField.layer.cornerRadius = 16
         
         searchButton.setTitle("Search", for: .normal)
-        searchButton.setTitleColor(.black, for: .normal)
+        searchButton.setTitleColor(.systemBlue, for: .normal)
         searchButton.setTitleColor(.gray, for: .disabled)
         
         alertLabel.textColor = .red
         alertLabel.text = "Only letters allowed"
         alertLabel.isHidden = true
         
-        resetButton.tintColor = .blue
-        resetButton.setImage(.init(systemName: "checkmark.circle"), for: .normal)
-        resetButton.setImage(.init(systemName: "arrow.clockwise"), for: .disabled)
+        resetButton.setTitle("Refresh?", for: .normal)
+        resetButton.setTitleColor(.systemBlue, for: .normal)
+        resetButton.isHidden = true
     }
     
     func bindUI() {
@@ -127,7 +131,7 @@ private extension ViewController {
         
         viewModel.isFetchingAPIFailedDriver
             .map { !$0 }
-            .drive(resetButton.rx.isEnabled)
+            .drive(resetButton.rx.isHidden)
             .disposed(by: disposeBag)
         
         viewModel.modelDriver
