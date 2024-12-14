@@ -33,6 +33,9 @@ final class MainCoordinator: Coordinator {
 // MARK: - Private
 private extension MainCoordinator {
     func navigateToDetailScreen() {
-        
+        guard let navigationController = navigationController else { return }
+        let detailCoordinator = DetailCoordinator(navigationController: navigationController)
+        detailCoordinator.start()
+        coordinators.append(detailCoordinator)
     }
 }
