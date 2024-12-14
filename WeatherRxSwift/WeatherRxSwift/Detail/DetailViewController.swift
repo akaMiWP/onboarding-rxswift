@@ -35,7 +35,7 @@ final class DetailViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        viewModel.viewDidDisappearSubject.onCompleted()
+        viewModel.viewDidDisappearSubject.onNext(())
     }
 }
 

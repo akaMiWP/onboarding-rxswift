@@ -16,14 +16,12 @@ final class DetailCoordinator: Coordinator {
         self.model = model
     }
     
-    deinit { print("Deinit") }
-    
     func start() {
         let viewModel = DetailViewModel(model: model)
         
         viewModel.viewDidDisappearSubject
-            .subscribe(onCompleted: { [weak self] in
-                self?.didFinish.onCompleted()
+            .subscribe(onNext: { [weak self] in
+                self?.didFinish.onNext(())
             })
             .disposed(by: disposeBag)
         

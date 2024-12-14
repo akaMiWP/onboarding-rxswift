@@ -32,10 +32,12 @@ final class MainCoordinator: Coordinator {
 private extension MainCoordinator {
     func navigateToDetailScreen(with model: WeatherModel) {
         let detailCoordinator = DetailCoordinator(navigationController: navigationController, model: model)
-        detailCoordinator.didFinish.subscribe(onCompleted: { [weak self] in
-            self?.removeCoordinators(detailCoordinator)
-        })
-        .disposed(by: disposeBag)
+        detailCoordinator.didFinish
+            .take(1)
+            .subscribe(onNext: { [weak self] in
+                self?.removeCoordinators(detailCoordinator)
+            })
+            .disposed(by: disposeBag)
         detailCoordinator.start()
         coordinators.append(detailCoordinator)
     }
