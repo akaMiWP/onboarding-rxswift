@@ -20,7 +20,7 @@ final class MainCoordinator: Coordinator {
             .subscribe(onNext: { [weak self] in
                 self?.navigateToDetailScreen(with: $0)
             })
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
         
         let viewController = MainViewController(viewModel: viewModel)
         viewController.view.backgroundColor = .white

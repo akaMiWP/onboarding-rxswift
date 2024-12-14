@@ -35,7 +35,7 @@ final class DetailViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        viewModel.viewDidDisappearSubject.on(.completed)
+        viewModel.viewDidDisappearSubject.onCompleted()
     }
 }
 
@@ -79,10 +79,19 @@ private extension DetailViewController {
     }
     
     func bindUI() {
+        bindNavigation()
+        bindWeather()
+        bindCoordinate()
+        bindDetails()
+    }
+    
+    func bindNavigation() {
         viewModel.modelDriver.map(\.name)
             .drive(self.navigationItem.rx.title)
             .disposed(by: disposeBag)
-        
+    }
+    
+    func bindWeather() {
         let weatherDriver = viewModel.modelDriver.compactMap { $0.weather.first }
         weatherDriver
             .map(\.main)
@@ -94,7 +103,10 @@ private extension DetailViewController {
             .map { "Weather description: \($0)" }
             .drive(descriptionLabel.rx.text)
             .disposed(by: disposeBag)
-        
+    }
+    
+    
+    func bindCoordinate() {
         let coordinateDriver = viewModel.modelDriver.map(\.coordinate)
         coordinateDriver
             .map(\.lat)
@@ -106,7 +118,9 @@ private extension DetailViewController {
             .map { "Longtitude: \($0)" }
             .drive(longtitudeLabel.rx.text)
             .disposed(by: disposeBag)
-        
+    }
+    
+    func bindDetails() {
         let detailsDriver = viewModel.modelDriver.map(\.details)
         detailsDriver.map(\.temp)
             .map { "Temperature is: \($0)" }

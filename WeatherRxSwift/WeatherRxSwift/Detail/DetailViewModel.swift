@@ -15,6 +15,6 @@ final class DetailViewModel {
     }
     
     init(model: WeatherModel) {
-        modelObservable = Observable<WeatherModel>.from(optional: model)
+        modelObservable = Observable<WeatherModel>.just(model)
     }
 }

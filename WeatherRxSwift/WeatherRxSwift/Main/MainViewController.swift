@@ -142,6 +142,11 @@ private extension MainViewController {
     }
     
     func bindUI() {
+        bindInputs()
+        bindOutputs()
+    }
+    
+    func bindInputs() {
         refreshControl.rx.controlEvent(.valueChanged)
             .bind(to: viewModel.fetchAPISubject)
             .disposed(by: disposeBag)
@@ -158,18 +163,20 @@ private extension MainViewController {
         seeMoreButton.rx.tap
             .bind(to: viewModel.navigateToDetail)
             .disposed(by: disposeBag)
-        
+    }
+    
+    func bindOutputs() {
         viewModel.isFetchingAPIDriver
             .drive(refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
         
-        viewModel.shouldShowAlertDriver
-            .map { !$0 }
+        let reactUpOnError = viewModel.invalidateSearchInputDriver.map { !$0 }
+        
+        reactUpOnError
             .drive(searchButton.rx.isEnabled)
             .disposed(by: disposeBag)
             
-        viewModel.shouldShowAlertDriver
-            .map { !$0 }
+        reactUpOnError
             .drive(alertLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
