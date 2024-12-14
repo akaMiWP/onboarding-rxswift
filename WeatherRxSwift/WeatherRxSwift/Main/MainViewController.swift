@@ -152,7 +152,6 @@ private extension MainViewController {
             .disposed(by: disposeBag)
         
         textField.rx.text.orEmpty
-            .debug()
             .bind(to: viewModel.searchInputRelay)
             .disposed(by: disposeBag)
         

@@ -1,18 +1,18 @@
 // 
 
-struct WeatherModel: Decodable {
+struct WeatherModel: Decodable, Equatable {
     
-    struct Coordinate: Decodable {
+    struct Coordinate: Decodable, Equatable {
         let lat: Double
         let lon: Double
     }
     
-    struct Weather: Decodable {
+    struct Weather: Decodable, Equatable {
         let main: String
         let description: String
     }
     
-    struct Details: Decodable {
+    struct Details: Decodable, Equatable {
         let temp: Double
         let feelsLike: Double
     }
