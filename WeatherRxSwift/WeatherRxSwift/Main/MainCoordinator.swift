@@ -16,9 +16,9 @@ final class MainCoordinator: Coordinator {
     func start() {
         let viewModel = MainViewModel()
         
-        viewModel.navigateToDetail
+        viewModel.navigateToDetailWithModel
             .subscribe(onNext: { [weak self] in
-                self?.navigateToDetailScreen()
+                self?.navigateToDetailScreen(with: $0)
             })
             .disposed(by: viewModel.disposeBag)
         
@@ -32,9 +32,9 @@ final class MainCoordinator: Coordinator {
 
 // MARK: - Private
 private extension MainCoordinator {
-    func navigateToDetailScreen() {
+    func navigateToDetailScreen(with model: WeatherModel) {
         guard let navigationController = navigationController else { return }
-        let detailCoordinator = DetailCoordinator(navigationController: navigationController)
+        let detailCoordinator = DetailCoordinator(navigationController: navigationController, model: model)
         detailCoordinator.start()
         coordinators.append(detailCoordinator)
     }

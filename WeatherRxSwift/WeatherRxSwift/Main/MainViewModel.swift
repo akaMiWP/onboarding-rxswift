@@ -29,20 +29,26 @@ struct WeatherModel: Decodable {
         case coordinate="coord"
         case weather
         case details="main"
+        case name
     }
     
     let coordinate: Coordinate
     let weather: [Weather]
     let details: Details
+    let name: String
     
     static let defaultModel: WeatherModel = .init(
         coordinate: .init(lat: 0, lon: 0),
         weather: [.init(main: "unknown", description: "unknown")],
-        details: .init(temp: 0, feelsLike: 0)
+        details: .init(temp: 0, feelsLike: 0),
+        name: "unknown"
     )
 }
 
 final class MainViewModel {
+    
+    // Navigation properties
+    let navigateToDetailWithModel = PublishSubject<WeatherModel>()
     
     // Input properties
     let searchInputRelay = BehaviorRelay<String>(value: "")
@@ -53,7 +59,7 @@ final class MainViewModel {
     private let validateSearchInputSubject = PublishSubject<Bool>()
     private let isFetchingAPIFailedSubject = PublishSubject<Bool>()
     private let isFetchingAPISubject = PublishSubject<Bool>()
-    private let modelSubject = BehaviorSubject<WeatherModel>(value: .defaultModel)
+    private let modelSubject = BehaviorRelay<WeatherModel>(value: .defaultModel)
     var shouldShowAlertDriver: Driver<Bool> {
         validateSearchInputSubject.asDriver(onErrorJustReturn: false)
     }
@@ -112,6 +118,11 @@ final class MainViewModel {
                 return input.isEmpty || input.contains(where: { $0.isNumber })
             }
             .bind(to: validateSearchInputSubject)
+            .disposed(by: disposeBag)
+        
+        navigateToDetail
+            .map { self.modelSubject.value }
+            .bind(to: navigateToDetailWithModel)
             .disposed(by: disposeBag)
     }
 }

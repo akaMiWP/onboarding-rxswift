@@ -7,6 +7,7 @@ import UIKit
 final class DetailViewController: UIViewController {
     
     private let viewModel: DetailViewModel
+    private let disposeBag: DisposeBag = .init()
     
     init(viewModel: DetailViewModel) {
         self.viewModel = viewModel
@@ -16,5 +17,25 @@ final class DetailViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        configureUI()
+        bindUI()
+    }
+}
+
+// MARK: - Private
+private extension DetailViewController {
+    func configureUI() {
+        view.backgroundColor = .white
+    }
+    
+    func bindUI() {
+        viewModel.modelDriver.map { $0.name }
+            .drive(self.navigationItem.rx.title)
+            .disposed(by: disposeBag)
     }
 }
