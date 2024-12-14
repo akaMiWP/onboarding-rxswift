@@ -4,14 +4,13 @@ import RxSwift
 import UIKit
 
 final class MainCoordinator: Coordinator {
-    private let window: UIWindow?
     private let disposeBag: DisposeBag = .init()
-    private var navigationController: UINavigationController?
+    private let navigationController: UINavigationController
     
     var coordinators: [Coordinator] = []
     
-    init(window: UIWindow?) {
-        self.window = window
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
     }
     
     func start() {
@@ -25,16 +24,13 @@ final class MainCoordinator: Coordinator {
         
         let viewController = MainViewController(viewModel: viewModel)
         viewController.view.backgroundColor = .white
-        navigationController = UINavigationController(rootViewController: viewController)
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
+        navigationController.pushViewController(viewController, animated: true)
     }
 }
 
 // MARK: - Private
 private extension MainCoordinator {
     func navigateToDetailScreen(with model: WeatherModel) {
-        guard let navigationController = navigationController else { return }
         let detailCoordinator = DetailCoordinator(navigationController: navigationController, model: model)
         detailCoordinator.didFinish.subscribe(onCompleted: { [weak self] in
             self?.removeCoordinators(detailCoordinator)
