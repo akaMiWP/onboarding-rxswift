@@ -72,7 +72,7 @@ private extension ViewController {
         
         searchButton.snp.makeConstraints {
             $0.centerY.equalTo(textField)
-            $0.trailing.equalToSuperview().inset(24)
+            $0.trailing.equalToSuperview().inset(8)
             $0.height.equalTo(48)
             $0.width.equalTo(80)
         }
@@ -83,7 +83,7 @@ private extension ViewController {
         }
         
         latLongLabel.snp.makeConstraints {
-            $0.top.equalTo(textField.snp.bottom).offset(12)
+            $0.top.equalTo(alertLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(24)
         }
         
@@ -99,10 +99,9 @@ private extension ViewController {
         }
         
         resetButton.snp.makeConstraints {
-            $0.height.equalTo(48)
-            $0.width.equalTo(100)
-            $0.bottom.equalTo(view.snp.bottomMargin).offset(4)
-            $0.trailing.equalToSuperview().inset(24)
+            $0.size.equalTo(24)
+            $0.bottom.equalTo(view.snp.bottomMargin).inset(8)
+            $0.trailing.equalToSuperview().inset(8)
         }
         
         scrollView.refreshControl = refreshControl
@@ -115,14 +114,15 @@ private extension ViewController {
         searchButton.setTitle("Search", for: .normal)
         searchButton.setTitleColor(.systemBlue, for: .normal)
         searchButton.setTitleColor(.gray, for: .disabled)
+        searchButton.isEnabled = false
         
         alertLabel.textColor = .red
         alertLabel.text = "Only letters allowed"
         alertLabel.isHidden = true
         
-        resetButton.setTitle("Refresh?", for: .normal)
-        resetButton.setTitleColor(.systemBlue, for: .normal)
-        resetButton.isHidden = true
+        resetButton.tintColor = .systemBlue
+        resetButton.setImage(.init(systemName: "checkmark.circle"), for: .normal)
+        resetButton.setImage(.init(systemName: "icloud.slash"), for: .disabled)
     }
     
     func bindUI() {
@@ -131,14 +131,11 @@ private extension ViewController {
             .disposed(by: disposeBag)
         
         textField.rx.text.orEmpty
+            .debug()
             .bind(to: viewModel.searchInputRelay)
             .disposed(by: disposeBag)
         
         searchButton.rx.tap
-            .bind(to: viewModel.fetchAPISubject)
-            .disposed(by: disposeBag)
-        
-        resetButton.rx.tap
             .bind(to: viewModel.fetchAPISubject)
             .disposed(by: disposeBag)
         
@@ -158,7 +155,7 @@ private extension ViewController {
         
         viewModel.isFetchingAPIFailedDriver
             .map { !$0 }
-            .drive(resetButton.rx.isHidden)
+            .drive(resetButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
         viewModel.modelDriver

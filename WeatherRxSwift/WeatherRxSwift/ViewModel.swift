@@ -108,7 +108,7 @@ final class ViewModel {
         
         filteredSearchInputObservable
             .map { input -> Bool in
-                return input.contains(where: { $0.isNumber })
+                return input.isEmpty || input.contains(where: { $0.isNumber })
             }
             .bind(to: validateSearchInputSubject)
             .disposed(by: disposeBag)
