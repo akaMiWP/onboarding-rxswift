@@ -5,6 +5,7 @@ import UIKit
 
 final class MainCoordinator: Coordinator {
     private let window: UIWindow?
+    private let disposeBag: DisposeBag = .init()
     private var navigationController: UINavigationController?
     
     var coordinators: [Coordinator] = []
@@ -35,7 +36,15 @@ private extension MainCoordinator {
     func navigateToDetailScreen(with model: WeatherModel) {
         guard let navigationController = navigationController else { return }
         let detailCoordinator = DetailCoordinator(navigationController: navigationController, model: model)
+        detailCoordinator.didFinish.subscribe(onCompleted: { [weak self] in
+            self?.removeCoordinators(detailCoordinator)
+        })
+        .disposed(by: disposeBag)
         detailCoordinator.start()
         coordinators.append(detailCoordinator)
+    }
+    
+    func removeCoordinators(_ coordinator: Coordinator) {
+        coordinators = coordinators.filter { $0 !== coordinator }
     }
 }

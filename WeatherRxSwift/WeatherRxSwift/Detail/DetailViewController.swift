@@ -25,6 +25,11 @@ final class DetailViewController: UIViewController {
         configureUI()
         bindUI()
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel.viewDidDisappearSubject.on(.completed)
+    }
 }
 
 // MARK: - Private
