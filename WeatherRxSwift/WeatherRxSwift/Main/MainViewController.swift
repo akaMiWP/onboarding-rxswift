@@ -5,7 +5,7 @@ import RxSwift
 import SnapKit
 import UIKit
 
-class ViewController: UIViewController {
+class MainViewController: UIViewController {
     
     private let scrollView: UIScrollView = .init()
     private let contentView: UIView = .init()
@@ -20,9 +20,9 @@ class ViewController: UIViewController {
     private let resetButton: UIButton = .init()
     
     private let disposeBag: DisposeBag = .init()
-    private let viewModel: ViewModel
+    private let viewModel: MainViewModel
     
-    init(viewModel: ViewModel) {
+    init(viewModel: MainViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
@@ -41,7 +41,7 @@ class ViewController: UIViewController {
 }
 
 // MARK: - Private
-private extension ViewController {
+private extension MainViewController {
     func setUpUI() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)

@@ -42,7 +42,7 @@ struct WeatherModel: Decodable {
     )
 }
 
-final class ViewModel {
+final class MainViewModel {
     
     // Input properties
     let searchInputRelay = BehaviorRelay<String>(value: "")
@@ -53,6 +53,7 @@ final class ViewModel {
     private let isFetchingAPIFailedSubject = PublishSubject<Bool>()
     private let isFetchingAPISubject = PublishSubject<Bool>()
     private let modelSubject = BehaviorSubject<WeatherModel>(value: .defaultModel)
+    let navigateToDetail = PublishSubject<Void>()
     var shouldShowAlertDriver: Driver<Bool> {
         validateSearchInputSubject.asDriver(onErrorJustReturn: false)
     }
@@ -66,7 +67,7 @@ final class ViewModel {
         modelSubject.asDriver(onErrorJustReturn: .defaultModel)
     }
     
-    private let disposeBag: DisposeBag = .init()
+    let disposeBag: DisposeBag = .init()
     
     init() {
         let filteredSearchInputObservable = searchInputRelay
