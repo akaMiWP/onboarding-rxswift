@@ -51,12 +51,16 @@ final class ViewModel {
     // Output properties
     private let validateSearchInputSubject = PublishSubject<Bool>()
     private let isFetchingAPIFailedSubject = PublishSubject<Bool>()
+    private let isFetchingAPISubject = PublishSubject<Bool>()
     private let modelSubject = BehaviorSubject<WeatherModel>(value: .defaultModel)
     var shouldShowAlertDriver: Driver<Bool> {
         validateSearchInputSubject.asDriver(onErrorJustReturn: false)
     }
     var isFetchingAPIFailedDriver: Driver<Bool> {
         isFetchingAPIFailedSubject.asDriver(onErrorJustReturn: true)
+    }
+    var isFetchingAPIDriver: Driver<Bool> {
+        isFetchingAPISubject.asDriver(onErrorJustReturn: false)
     }
     var modelDriver: Driver<WeatherModel> {
         modelSubject.asDriver(onErrorJustReturn: .defaultModel)
@@ -82,9 +86,17 @@ final class ViewModel {
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
                         return try decoder.decode(WeatherModel.self, from: $0)
                     }
+                    .do(
+                        onNext: { _ in
+                            self.isFetchingAPISubject.on(.next(false))
+                        },
+                        onError: { _ in
+                            self.isFetchingAPISubject.on(.next(false))
+                            self.isFetchingAPIFailedSubject.on(.next(true))
+                        }
+                    )
                     .catchErrorJustReturn(.defaultModel)
             }
-            .do(onError: { _ in self.isFetchingAPIFailedSubject.on(.next(true)) })
         
         fetchAPIObservable
             .bind(to: modelSubject)

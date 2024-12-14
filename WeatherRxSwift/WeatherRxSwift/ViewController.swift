@@ -7,6 +7,10 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    private let scrollView: UIScrollView = .init()
+    private let contentView: UIView = .init()
+    private let refreshControl: UIRefreshControl = .init()
+    
     private let textField: UITextField = .init()
     private let searchButton: UIButton = .init()
     private let alertLabel: UILabel = .init()
@@ -39,16 +43,28 @@ class ViewController: UIViewController {
 // MARK: - Private
 private extension ViewController {
     func setUpUI() {
-        view.addSubview(textField)
-        view.addSubview(searchButton)
-        view.addSubview(alertLabel)
-        view.addSubview(latLongLabel)
-        view.addSubview(weatherOverallLabel)
-        view.addSubview(weatherDetailLabel)
-        view.addSubview(resetButton)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(textField)
+        contentView.addSubview(searchButton)
+        contentView.addSubview(alertLabel)
+        contentView.addSubview(latLongLabel)
+        contentView.addSubview(weatherOverallLabel)
+        contentView.addSubview(weatherDetailLabel)
+        contentView.addSubview(resetButton)
+        
+        scrollView.snp.makeConstraints {
+            $0.topMargin.bottomMargin.equalToSuperview().inset(12)
+            $0.leading.trailing.equalToSuperview().inset(12)
+        }
+        
+        contentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+            $0.width.equalToSuperview()
+        }
         
         textField.snp.makeConstraints {
-            $0.top.equalTo(view.snp.topMargin).offset(8)
+            $0.top.equalToSuperview().inset(8)
             $0.leading.equalToSuperview().inset(24)
             $0.trailing.equalTo(searchButton.snp.leading).offset(-8)
             $0.height.equalTo(48)
@@ -79,6 +95,7 @@ private extension ViewController {
         weatherDetailLabel.snp.makeConstraints {
             $0.top.equalTo(weatherOverallLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalToSuperview()
         }
         
         resetButton.snp.makeConstraints {
@@ -87,6 +104,8 @@ private extension ViewController {
             $0.bottom.equalTo(view.snp.bottomMargin).offset(4)
             $0.trailing.equalToSuperview().inset(24)
         }
+        
+        scrollView.refreshControl = refreshControl
         
         textField.placeholder = "Enter City Name"
         textField.layer.borderWidth = 1
@@ -107,6 +126,10 @@ private extension ViewController {
     }
     
     func bindUI() {
+        refreshControl.rx.controlEvent(.valueChanged)
+            .bind(to: viewModel.fetchAPISubject)
+            .disposed(by: disposeBag)
+        
         textField.rx.text.orEmpty
             .bind(to: viewModel.searchInputRelay)
             .disposed(by: disposeBag)
@@ -117,6 +140,10 @@ private extension ViewController {
         
         resetButton.rx.tap
             .bind(to: viewModel.fetchAPISubject)
+            .disposed(by: disposeBag)
+        
+        viewModel.isFetchingAPIDriver
+            .drive(refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
         
         viewModel.shouldShowAlertDriver
@@ -137,7 +164,7 @@ private extension ViewController {
         viewModel.modelDriver
             .map { $0.coordinate }
             .map { "Latitude: \($0.lat)\n Longtitude: \($0.lon)" }
-            .drive(weatherOverallLabel.rx.text)
+            .drive(latLongLabel.rx.text)
             .disposed(by: disposeBag)
         
         viewModel.modelDriver
