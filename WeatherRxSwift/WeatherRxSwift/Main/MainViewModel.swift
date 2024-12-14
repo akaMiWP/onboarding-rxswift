@@ -47,13 +47,13 @@ final class MainViewModel {
     // Input properties
     let searchInputRelay = BehaviorRelay<String>(value: "")
     let fetchAPISubject = PublishSubject<Void>()
+    let navigateToDetail = PublishSubject<Void>()
     
     // Output properties
     private let validateSearchInputSubject = PublishSubject<Bool>()
     private let isFetchingAPIFailedSubject = PublishSubject<Bool>()
     private let isFetchingAPISubject = PublishSubject<Bool>()
     private let modelSubject = BehaviorSubject<WeatherModel>(value: .defaultModel)
-    let navigateToDetail = PublishSubject<Void>()
     var shouldShowAlertDriver: Driver<Bool> {
         validateSearchInputSubject.asDriver(onErrorJustReturn: false)
     }

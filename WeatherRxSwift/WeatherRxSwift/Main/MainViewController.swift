@@ -17,6 +17,7 @@ class MainViewController: UIViewController {
     private let latLongLabel: UILabel = .init()
     private let weatherOverallLabel: UILabel = .init()
     private let weatherDetailLabel: UILabel = .init()
+    private let seeMoreButton: UIButton = .init()
     private let resetButton: UIButton = .init()
     
     private let disposeBag: DisposeBag = .init()
@@ -51,6 +52,7 @@ private extension MainViewController {
         contentView.addSubview(latLongLabel)
         contentView.addSubview(weatherOverallLabel)
         contentView.addSubview(weatherDetailLabel)
+        contentView.addSubview(seeMoreButton)
         contentView.addSubview(resetButton)
         
         scrollView.snp.makeConstraints {
@@ -95,7 +97,14 @@ private extension MainViewController {
         weatherDetailLabel.snp.makeConstraints {
             $0.top.equalTo(weatherOverallLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(24)
-            $0.bottom.equalToSuperview()
+        }
+        
+        seeMoreButton.snp.makeConstraints {
+            $0.top.greaterThanOrEqualTo(weatherDetailLabel.snp.bottom).offset(24)
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(48)
+            $0.width.equalTo(150)
+            $0.bottom.equalToSuperview().inset(24)
         }
         
         resetButton.snp.makeConstraints {
@@ -120,9 +129,16 @@ private extension MainViewController {
         alertLabel.text = "Only letters allowed"
         alertLabel.isHidden = true
         
+        seeMoreButton.setTitle("See More", for: .normal)
+        seeMoreButton.setTitleColor(.systemBlue, for: .normal)
+        
         resetButton.tintColor = .systemBlue
         resetButton.setImage(.init(systemName: "checkmark.circle"), for: .normal)
         resetButton.setImage(.init(systemName: "icloud.slash"), for: .disabled)
+        
+        [latLongLabel, weatherOverallLabel, weatherDetailLabel].forEach {
+            $0.numberOfLines = 2
+        }
     }
     
     func bindUI() {
@@ -137,6 +153,10 @@ private extension MainViewController {
         
         searchButton.rx.tap
             .bind(to: viewModel.fetchAPISubject)
+            .disposed(by: disposeBag)
+        
+        seeMoreButton.rx.tap
+            .bind(to: viewModel.navigateToDetail)
             .disposed(by: disposeBag)
         
         viewModel.isFetchingAPIDriver
@@ -160,19 +180,19 @@ private extension MainViewController {
         
         viewModel.modelDriver
             .map { $0.coordinate }
-            .map { "Latitude: \($0.lat)\n Longtitude: \($0.lon)" }
+            .map { "Latitude: \($0.lat)\nLongtitude: \($0.lon)" }
             .drive(latLongLabel.rx.text)
             .disposed(by: disposeBag)
         
         viewModel.modelDriver
             .compactMap { $0.weather.first }
-            .map { "Main: \($0.main)\n Description: \($0.description)" }
+            .map { "Main: \($0.main)\nDescription: \($0.description)" }
             .drive(weatherOverallLabel.rx.text)
             .disposed(by: disposeBag)
         
         viewModel.modelDriver
             .map { $0.details }
-            .map { "Temperature: \($0.temp)\n Feel like: \($0.feelsLike)" }
+            .map { "Temperature: \($0.temp)\nFeel like: \($0.feelsLike)" }
             .drive(weatherDetailLabel.rx.text)
             .disposed(by: disposeBag)
     }
