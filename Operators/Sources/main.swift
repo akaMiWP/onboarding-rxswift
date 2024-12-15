@@ -34,8 +34,8 @@ example(of: "elementAt") {
     //  2
     strikes
         .elementAt(2)
-        .subscribe(onNext: { _ in
-            print("You're out!")
+        .subscribe(onNext: {
+            print($0)
         })
         .disposed(by: disposeBag)
     

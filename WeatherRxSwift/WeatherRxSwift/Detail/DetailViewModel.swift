@@ -9,12 +9,11 @@ final class DetailViewModel {
     let viewDidDisappearSubject = PublishSubject<Void>()
     
     // Output Properties
-    private let modelObservable: Observable<WeatherModel>
-    var modelDriver: Driver<WeatherModel> {
-        modelObservable.asDriver(onErrorJustReturn: .defaultModel)
-    }
+    let modelDriver: Driver<WeatherModel>
     
     init(model: WeatherModel) {
-        modelObservable = Observable<WeatherModel>.just(model)
+        modelDriver = Observable<WeatherModel>
+            .just(model)
+            .asDriver(onErrorJustReturn: .defaultModel)
     }
 }

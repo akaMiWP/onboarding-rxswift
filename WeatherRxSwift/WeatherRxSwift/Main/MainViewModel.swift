@@ -15,22 +15,21 @@ final class MainViewModel {
     let navigateToDetail = PublishSubject<Void>()
     
     // Output properties
-    private let invalidateSearchInputSubject = PublishSubject<Bool>()
     private let isFetchingAPIFailedSubject = PublishSubject<Bool>()
     private let isFetchingAPISubject = PublishSubject<Bool>()
-    private let modelSubject = BehaviorRelay<WeatherModel>(value: .defaultModel)
-    var invalidateSearchInputDriver: Driver<Bool> {
-        invalidateSearchInputSubject.asDriver(onErrorJustReturn: false)
-    }
     var isFetchingAPIFailedDriver: Driver<Bool> {
         isFetchingAPIFailedSubject.asDriver(onErrorJustReturn: true)
     }
     var isFetchingAPIDriver: Driver<Bool> {
         isFetchingAPISubject.asDriver(onErrorJustReturn: false)
     }
+    
+    private let modelSubject = BehaviorRelay<WeatherModel>(value: .defaultModel)
     var modelDriver: Driver<WeatherModel> {
         modelSubject.asDriver(onErrorJustReturn: .defaultModel)
     }
+    
+    let invalidateSearchInputDriver: Driver<Bool>
     
     private let disposeBag: DisposeBag = .init()
     
@@ -38,6 +37,12 @@ final class MainViewModel {
         let filteredSearchInputObservable = searchInputRelay
             .filter { !$0.isEmpty }
             .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
+        
+        invalidateSearchInputDriver = filteredSearchInputObservable
+            .map { input -> Bool in
+                return input.contains(where: { $0.isNumber })
+            }
+            .asDriver(onErrorJustReturn: false)
         
         let fetchAPIObservable = fetchAPISubject
             .flatMapLatest { _ in
@@ -66,13 +71,6 @@ final class MainViewModel {
         
         fetchAPIObservable
             .bind(to: modelSubject)
-            .disposed(by: disposeBag)
-        
-        filteredSearchInputObservable
-            .map { input -> Bool in
-                return input.contains(where: { $0.isNumber })
-            }
-            .bind(to: invalidateSearchInputSubject)
             .disposed(by: disposeBag)
         
         navigateToDetail
